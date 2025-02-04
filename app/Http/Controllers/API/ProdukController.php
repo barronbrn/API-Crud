@@ -1,31 +1,22 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ProdukController extends Controller
 {
-
-    public function show(){
-        // $produk = Produk::findOrFail($id);
-    }
-    // GET: Tampilkan semua produk di halaman web
+    // GET: Ambil semua data produk
     public function index()
     {
         $produk = Produk::all();
-        return view('produk.produkIndex', compact('produk'));
+        return response()->json($produk);
     }
 
-    // GET: Form tambah produk
-    public function create()
-    {
-        return view('produk.create');
-    }
-
-    // POST: Simpan produk baru melalui form web
+    // POST: Simpan produk baru
     public function store(Request $request)
     {
         $request->validate([
@@ -42,7 +33,7 @@ class ProdukController extends Controller
             $fotoPath = $request->file('foto')->store('produk', 'public');
         }
 
-        Produk::create([
+        $produk = Produk::create([
             'namaPeralatan' => $request->namaPeralatan,
             'jenis' => $request->jenis,
             'deskripsi' => $request->deskripsi,
@@ -51,27 +42,36 @@ class ProdukController extends Controller
             'foto' => $fotoPath
         ]);
 
-        return redirect()->route('produk.index')->with('success', 'Produk berhasil ditambahkan!');
+        return response()->json([
+            'message' => 'Produk berhasil ditambahkan!',
+            'data' => $produk
+        ], 201);
     }
 
-    // GET: Form edit produk
-    public function edit($id)
+    // GET: Ambil satu produk berdasarkan ID
+    public function show($id)
     {
-        $produk = Produk::findOrFail($id);
-        return view('produk.edit', compact('produk'));
+        $produk = Produk::find($id);
+        if (!$produk) {
+            return response()->json(['message' => 'Produk tidak ditemukan'], 404);
+        }
+        return response()->json($produk);
     }
 
-    // PUT: Update produk dari form web
+    // PUT: Update produk
     public function update(Request $request, $id)
     {
-        $produk = Produk::findOrFail($id);
+        $produk = Produk::find($id);
+        if (!$produk) {
+            return response()->json(['message' => 'Produk tidak ditemukan'], 404);
+        }
 
         $request->validate([
-            'namaPeralatan' => 'required|string',
-            'jenis' => 'required|string',
-            'deskripsi' => 'required|json',
-            'stok' => 'required|integer',
-            'harga' => 'required|integer',
+            'namaPeralatan' => 'sometimes|required|string',
+            'jenis' => 'sometimes|required|string',
+            'deskripsi' => 'sometimes|required|json',
+            'stok' => 'sometimes|required|integer',
+            'harga' => 'sometimes|required|integer',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
@@ -84,18 +84,25 @@ class ProdukController extends Controller
 
         $produk->update($request->except(['foto']));
 
-        return redirect()->route('produk.index')->with('success', 'Produk berhasil diperbarui!');
+        return response()->json([
+            'message' => 'Produk berhasil diperbarui!',
+            'data' => $produk
+        ]);
     }
 
     // DELETE: Hapus produk
     public function destroy($id)
     {
-        $produk = Produk::findOrFail($id);
+        $produk = Produk::find($id);
+        if (!$produk) {
+            return response()->json(['message' => 'Produk tidak ditemukan'], 404);
+        }
+
         if ($produk->foto) {
             Storage::disk('public')->delete($produk->foto);
         }
-        $produk->delete();
 
-        return redirect()->route('produk.index')->with('success', 'Produk berhasil dihapus!');
+        $produk->delete();
+        return response()->json(['message' => 'Produk berhasil dihapus']);
     }
 }
