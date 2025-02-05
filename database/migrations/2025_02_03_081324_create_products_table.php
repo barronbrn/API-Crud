@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('namaPeralatan');
             $table->string('jenis');
-            $table->json('deskripsi');
+            // $table->json('deskripsi');
             $table->integer('stok');
             $table->bigInteger('harga');
             $table->string('foto')->nullable();
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('products');
+        Schema::dropIfExists('peralatan');
     }
 };

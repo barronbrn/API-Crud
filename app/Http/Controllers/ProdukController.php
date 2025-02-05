@@ -31,27 +31,31 @@ class ProdukController extends Controller
         $request->validate([
             'namaPeralatan' => 'required|string',
             'jenis' => 'required|string',
-            'deskripsi' => 'required|json',
+            // 'deskripsi' => 'required|json',
             'stok' => 'required|integer',
             'harga' => 'required|integer',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
         $fotoPath = null;
-        if ($request->hasFile('foto')) {
-            $fotoPath = $request->file('foto')->store('produk', 'public');
+        if
+        ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $namaFile = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('image'), $namaFile);
+            $fotoPath = 'image/' . $namaFile;
         }
 
         Produk::create([
             'namaPeralatan' => $request->namaPeralatan,
             'jenis' => $request->jenis,
-            'deskripsi' => $request->deskripsi,
+            // 'deskripsi' => $request->deskripsi,
             'stok' => $request->stok,
             'harga' => $request->harga,
             'foto' => $fotoPath
         ]);
 
-        return redirect()->route('produk.index')->with('success', 'Produk berhasil ditambahkan!');
+        return redirect()->route('produk.index')->with('success', 'Peralatan berhasil ditambahkan!');
     }
 
     // GET: Form edit produk
@@ -69,22 +73,27 @@ class ProdukController extends Controller
         $request->validate([
             'namaPeralatan' => 'required|string',
             'jenis' => 'required|string',
-            'deskripsi' => 'required|json',
             'stok' => 'required|integer',
             'harga' => 'required|integer',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
         if ($request->hasFile('foto')) {
-            if ($produk->foto) {
-                Storage::disk('public')->delete($produk->foto);
+            // Hapus foto lama jika ada
+            if ($produk->foto && file_exists(public_path($produk->foto))) {
+                unlink(public_path($produk->foto));
             }
-            $produk->foto = $request->file('foto')->store('produk', 'public');
+
+            // Simpan foto baru
+            $file = $request->file('foto');
+            $namaFile = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('image'), $namaFile);
+            $produk->foto = 'image/' . $namaFile;
         }
 
         $produk->update($request->except(['foto']));
 
-        return redirect()->route('produk.index')->with('success', 'Produk berhasil diperbarui!');
+        return redirect()->route('produk.index')->with('success', 'Peralatan berhasil diperbarui!');
     }
 
     // DELETE: Hapus produk
@@ -96,6 +105,6 @@ class ProdukController extends Controller
         }
         $produk->delete();
 
-        return redirect()->route('produk.index')->with('success', 'Produk berhasil dihapus!');
+        return redirect()->route('produk.index')->with('success', 'Peralatan berhasil dihapus!');
     }
 }

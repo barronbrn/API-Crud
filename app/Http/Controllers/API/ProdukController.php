@@ -22,7 +22,7 @@ class ProdukController extends Controller
         $request->validate([
             'namaPeralatan' => 'required|string',
             'jenis' => 'required|string',
-            'deskripsi' => 'required|json',
+            // 'deskripsi' => 'required|json',
             'stok' => 'required|integer',
             'harga' => 'required|integer',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
@@ -36,14 +36,14 @@ class ProdukController extends Controller
         $produk = Produk::create([
             'namaPeralatan' => $request->namaPeralatan,
             'jenis' => $request->jenis,
-            'deskripsi' => $request->deskripsi,
+            // 'deskripsi' => $request->deskripsi,
             'stok' => $request->stok,
             'harga' => $request->harga,
             'foto' => $fotoPath
         ]);
 
         return response()->json([
-            'message' => 'Produk berhasil ditambahkan!',
+            'message' => 'Peralatan berhasil ditambahkan!',
             'data' => $produk
         ], 201);
     }
@@ -53,7 +53,7 @@ class ProdukController extends Controller
     {
         $produk = Produk::find($id);
         if (!$produk) {
-            return response()->json(['message' => 'Produk tidak ditemukan'], 404);
+            return response()->json(['message' => 'Peralatan tidak ditemukan'], 404);
         }
         return response()->json($produk);
     }
@@ -63,13 +63,13 @@ class ProdukController extends Controller
     {
         $produk = Produk::find($id);
         if (!$produk) {
-            return response()->json(['message' => 'Produk tidak ditemukan'], 404);
+            return response()->json(['message' => 'Peralatan tidak ditemukan'], 404);
         }
 
         $request->validate([
             'namaPeralatan' => 'sometimes|required|string',
             'jenis' => 'sometimes|required|string',
-            'deskripsi' => 'sometimes|required|json',
+            // 'deskripsi' => 'sometimes|required|json',
             'stok' => 'sometimes|required|integer',
             'harga' => 'sometimes|required|integer',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
@@ -85,7 +85,7 @@ class ProdukController extends Controller
         $produk->update($request->except(['foto']));
 
         return response()->json([
-            'message' => 'Produk berhasil diperbarui!',
+            'message' => 'Peralatan berhasil diperbarui!',
             'data' => $produk
         ]);
     }
@@ -95,7 +95,7 @@ class ProdukController extends Controller
     {
         $produk = Produk::find($id);
         if (!$produk) {
-            return response()->json(['message' => 'Produk tidak ditemukan'], 404);
+            return response()->json(['message' => 'Peralatan tidak ditemukan'], 404);
         }
 
         if ($produk->foto) {
@@ -103,6 +103,6 @@ class ProdukController extends Controller
         }
 
         $produk->delete();
-        return response()->json(['message' => 'Produk berhasil dihapus']);
+        return response()->json(['message' => 'Peralatan berhasil dihapus']);
     }
 }
