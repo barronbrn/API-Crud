@@ -20,10 +20,10 @@
                         <label for="jenis" class="form-label">Jenis</label>
                         <input type="text" class="form-control" id="jenis" name="jenis" required>
                     </div>
-                    <div class="mb-3">
+                    {{-- <div class="mb-3">
                         <label for="deskripsi" class="form-label">Deskripsi (JSON)</label>
                         <textarea class="form-control" id="deskripsi" name="deskripsi" required></textarea>
-                    </div>
+                    </div> --}}
                     <div class="mb-3">
                         <label for="stok" class="form-label">Stok</label>
                         <input type="number" class="form-control" id="stok" name="stok" required>
